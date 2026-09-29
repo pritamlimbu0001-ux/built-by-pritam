@@ -22,6 +22,8 @@ RUN apt-get update && apt-get install -y \
         intl \
         zip \
         gd \
+    && a2dismod mpm_event mpm_worker mpm_prefork || true \
+    && a2enmod mpm_prefork \
     && a2enmod rewrite \
     && rm -rf /var/lib/apt/lists/*
 
@@ -44,22 +46,22 @@ RUN composer install \
 RUN npm install
 RUN npm run build
 
-# Configure Apache for Laravel
-RUN sed -ri \
-    -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' \
-    /etc/apache2/sites-available/000-default.conf \
-    /etc/apache2/sites-available/default-ssl.conf
-
-# Laravel public directory
+# Set Laravel public directory
 ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
 
+# Configure Apache document root
+RUN sed -ri \
+    -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' \
+    /etc/apache2/sites-available/000-default.conf
+
+# Laravel Apache configuration
 RUN printf '<Directory /var/www/html/public>\n\
     AllowOverride All\n\
     Require all granted\n\
 </Directory>\n' > /etc/apache2/conf-available/laravel.conf \
     && a2enconf laravel
 
-# Permissions
+# Laravel permissions
 RUN mkdir -p \
     storage/framework/cache \
     storage/framework/sessions \
