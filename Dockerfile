@@ -1,6 +1,6 @@
 FROM php:8.2-apache
 
-# Install system dependencies
+# Install system dependencies and PHP extensions
 RUN apt-get update && apt-get install -y \
     git \
     unzip \
@@ -22,7 +22,8 @@ RUN apt-get update && apt-get install -y \
         intl \
         zip \
         gd \
-    && a2dismod mpm_event mpm_worker mpm_prefork || true \
+    && a2dismod mpm_event || true \
+    && a2dismod mpm_worker || true \
     && a2enmod mpm_prefork \
     && a2enmod rewrite \
     && rm -rf /var/lib/apt/lists/*
@@ -32,7 +33,7 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
 
-# Copy application
+# Copy Laravel application
 COPY . .
 
 # Install PHP dependencies
@@ -42,11 +43,13 @@ RUN composer install \
     --no-interaction \
     --no-scripts
 
-# Install frontend dependencies and build assets
+# Install frontend dependencies
 RUN npm install
+
+# Build frontend assets
 RUN npm run build
 
-# Set Laravel public directory
+# Laravel public directory
 ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
 
 # Configure Apache document root
@@ -61,6 +64,9 @@ RUN printf '<Directory /var/www/html/public>\n\
 </Directory>\n' > /etc/apache2/conf-available/laravel.conf \
     && a2enconf laravel
 
+# Verify Apache has only one MPM
+RUN apache2ctl -M | grep mpm
+
 # Laravel permissions
 RUN mkdir -p \
     storage/framework/cache \
@@ -73,4 +79,4 @@ RUN mkdir -p \
 
 EXPOSE 80
 
-CMD ["sh", "-c", "sed -i \"s/Listen 80/Listen ${PORT:-80}/\" /etc/apache2/ports.conf && sed -i \"s/:80>/:${PORT:-80}>/g\" /etc/apache2/sites-available/000-default.conf && apache2-foreground"]
+CMD ["apache2-foreground"]
