@@ -22,11 +22,19 @@ RUN apt-get update && apt-get install -y \
         intl \
         zip \
         gd \
-    && a2dismod mpm_event || true \
-    && a2dismod mpm_worker || true \
-    && a2enmod mpm_prefork \
-    && a2enmod rewrite \
     && rm -rf /var/lib/apt/lists/*
+
+# --------------------------------------------------
+# Apache MPM FIX
+# Keep ONLY mpm_prefork enabled
+# --------------------------------------------------
+RUN rm -f /etc/apache2/mods-enabled/mpm_*.load \
+          /etc/apache2/mods-enabled/mpm_*.conf \
+    && a2enmod mpm_prefork \
+    && a2enmod rewrite
+
+# Verify exactly one MPM is enabled
+RUN apache2ctl -M 2>&1 | grep mpm
 
 # Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
@@ -46,7 +54,7 @@ RUN composer install \
 # Install frontend dependencies
 RUN npm install
 
-# Build frontend assets
+# Build Vite assets
 RUN npm run build
 
 # Laravel public directory
@@ -63,9 +71,6 @@ RUN printf '<Directory /var/www/html/public>\n\
     Require all granted\n\
 </Directory>\n' > /etc/apache2/conf-available/laravel.conf \
     && a2enconf laravel
-
-# Verify Apache has only one MPM
-RUN apache2ctl -M | grep mpm
 
 # Laravel permissions
 RUN mkdir -p \
