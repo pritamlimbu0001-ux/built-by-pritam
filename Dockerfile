@@ -1,6 +1,6 @@
-FROM php:8.2-apache
+FROM php:8.2-cli
 
-# Install system dependencies and PHP extensions
+# System packages
 RUN apt-get update && apt-get install -y \
     git \
     unzip \
@@ -10,7 +10,6 @@ RUN apt-get update && apt-get install -y \
     libonig-dev \
     libxml2-dev \
     libicu-dev \
-    curl \
     nodejs \
     npm \
     && docker-php-ext-install \
@@ -23,22 +22,6 @@ RUN apt-get update && apt-get install -y \
         zip \
         gd \
     && rm -rf /var/lib/apt/lists/*
-
-# ============================================================
-# Apache MPM FIX
-# Remove EVERY enabled MPM module
-# Then enable ONLY prefork
-# ============================================================
-
-RUN find /etc/apache2/mods-enabled -type l -name 'mpm_*' -delete \
-    && a2enmod mpm_prefork \
-    && a2enmod rewrite
-
-# Verify only one MPM exists
-RUN echo "=== ENABLED MPM MODULES ===" \
-    && find /etc/apache2/mods-enabled -maxdepth 1 -type l -name 'mpm_*' -print \
-    && echo "=== APACHE MPM ===" \
-    && apache2ctl -M 2>&1 | grep mpm
 
 # Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
@@ -55,28 +38,9 @@ RUN composer install \
     --no-interaction \
     --no-scripts
 
-# Install frontend dependencies
+# Install frontend dependencies and build
 RUN npm install
-
-# Build frontend
 RUN npm run build
-
-# ============================================================
-# Laravel public directory
-# ============================================================
-
-ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
-
-RUN sed -ri \
-    -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' \
-    /etc/apache2/sites-available/000-default.conf
-
-RUN printf '<Directory /var/www/html/public>\n\
-    AllowOverride All\n\
-    Require all granted\n\
-</Directory>\n' \
-    > /etc/apache2/conf-available/laravel.conf \
-    && a2enconf laravel
 
 # Laravel writable directories
 RUN mkdir -p \
@@ -85,9 +49,9 @@ RUN mkdir -p \
     storage/framework/views \
     storage/logs \
     bootstrap/cache \
-    && chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 
-EXPOSE 80
+# Railway provides PORT at runtime
+EXPOSE 8080
 
-CMD ["apache2-foreground"]
+CMD ["sh", "-c", "php artisan serve --host=0.0.0.0 --port=${PORT:-8080}"]
