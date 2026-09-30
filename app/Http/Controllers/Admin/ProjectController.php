@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Project;
+use Cloudinary\Api\Upload\UploadApi;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -23,7 +24,9 @@ class ProjectController extends Controller
     public function create(): View
     {
         return view('admin.projects.create', [
-            'project' => new Project(['published' => true])
+            'project' => new Project([
+                'published' => true,
+            ]),
         ]);
     }
 
@@ -32,10 +35,33 @@ class ProjectController extends Controller
         $data = $this->validated($request);
 
         if ($request->hasFile('image')) {
-            $uploadedFile = $request->file('image')
-                ->storeOnCloudinary('projects');
+            try {
+                $uploadApi = new UploadApi();
 
-            $data['image'] = $uploadedFile->getSecurePath();
+                $result = $uploadApi->upload(
+                    $request->file('image')->getRealPath(),
+                    [
+                        'folder' => 'projects',
+                    ]
+                );
+
+                if (! isset($result['secure_url'])) {
+                    return back()
+                        ->withInput()
+                        ->withErrors([
+                            'image' => 'Cloudinary uploaded the image but did not return a secure URL.',
+                        ]);
+                }
+
+                $data['image'] = $result['secure_url'];
+
+            } catch (\Throwable $e) {
+                return back()
+                    ->withInput()
+                    ->withErrors([
+                        'image' => 'Cloudinary error: ' . $e->getMessage(),
+                    ]);
+            }
         }
 
         Project::create($data);
@@ -55,10 +81,33 @@ class ProjectController extends Controller
         $data = $this->validated($request, $project);
 
         if ($request->hasFile('image')) {
-            $uploadedFile = $request->file('image')
-                ->storeOnCloudinary('projects');
+            try {
+                $uploadApi = new UploadApi();
 
-            $data['image'] = $uploadedFile->getSecurePath();
+                $result = $uploadApi->upload(
+                    $request->file('image')->getRealPath(),
+                    [
+                        'folder' => 'projects',
+                    ]
+                );
+
+                if (! isset($result['secure_url'])) {
+                    return back()
+                        ->withInput()
+                        ->withErrors([
+                            'image' => 'Cloudinary uploaded the image but did not return a secure URL.',
+                        ]);
+                }
+
+                $data['image'] = $result['secure_url'];
+
+            } catch (\Throwable $e) {
+                return back()
+                    ->withInput()
+                    ->withErrors([
+                        'image' => 'Cloudinary error: ' . $e->getMessage(),
+                    ]);
+            }
         }
 
         $project->update($data);
@@ -80,7 +129,7 @@ class ProjectController extends Controller
     public function togglePublished(Project $project): RedirectResponse
     {
         $project->update([
-            'published' => ! $project->published
+            'published' => ! $project->published,
         ]);
 
         return back()->with(
@@ -94,7 +143,7 @@ class ProjectController extends Controller
     public function toggleFeatured(Project $project): RedirectResponse
     {
         $project->update([
-            'featured' => ! $project->featured
+            'featured' => ! $project->featured,
         ]);
 
         return back()->with(
@@ -110,29 +159,71 @@ class ProjectController extends Controller
         ?Project $project = null
     ): array {
         return $request->validate([
-            'title'             => ['required', 'string', 'max:255'],
-            'slug'              => [
+            'title' => [
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('projects', 'slug')->ignore($project)
             ],
-            'short_description' => ['nullable', 'string', 'max:255'],
-            'description'       => ['required', 'string'],
-            'technologies'      => ['nullable', 'string', 'max:255'],
-            'github_url'        => ['nullable', 'url', 'max:255'],
-            'live_url'          => ['nullable', 'url', 'max:255'],
-            'image'             => [
+
+            'slug' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('projects', 'slug')->ignore($project),
+            ],
+
+            'short_description' => [
+                'nullable',
+                'string',
+                'max:255',
+            ],
+
+            'description' => [
+                'required',
+                'string',
+            ],
+
+            'technologies' => [
+                'nullable',
+                'string',
+                'max:255',
+            ],
+
+            'github_url' => [
+                'nullable',
+                'url',
+                'max:255',
+            ],
+
+            'live_url' => [
+                'nullable',
+                'url',
+                'max:255',
+            ],
+
+            'image' => [
                 'nullable',
                 'image',
                 'mimes:jpg,jpeg,png,webp',
-                'max:2048'
+                'max:2048',
             ],
-            'featured'          => ['nullable', 'boolean'],
-            'published'         => ['nullable', 'boolean'],
-            'sort_order'        => ['nullable', 'integer'],
+
+            'featured' => [
+                'nullable',
+                'boolean',
+            ],
+
+            'published' => [
+                'nullable',
+                'boolean',
+            ],
+
+            'sort_order' => [
+                'nullable',
+                'integer',
+            ],
         ]) + [
-            'featured'  => $request->boolean('featured'),
+            'featured' => $request->boolean('featured'),
             'published' => $request->boolean('published'),
             'sort_order' => $request->input('sort_order', 0),
         ];
