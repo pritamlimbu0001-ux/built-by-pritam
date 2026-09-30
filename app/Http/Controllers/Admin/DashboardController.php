@@ -22,7 +22,10 @@ class DashboardController extends Controller
                 'total_skills'       => Skill::count(),
                 'total_messages'     => ContactMessage::count(),
                 'unread_messages'    => ContactMessage::whereNull('read_at')->count(),
-                'resume_available'   => $resume && $resume->fileExists(),
+
+                // Resume is stored on Cloudinary.
+                // We only need to check whether a valid database record exists.
+                'resume_available'   => $resume && !empty($resume->file_path),
             ],
         ]);
     }

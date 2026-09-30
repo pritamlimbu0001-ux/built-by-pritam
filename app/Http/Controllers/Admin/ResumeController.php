@@ -7,6 +7,8 @@ use App\Models\Resume;
 use Cloudinary\Api\Upload\UploadApi;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Http;
 use Illuminate\View\View;
 
 class ResumeController extends Controller
@@ -46,12 +48,11 @@ class ResumeController extends Controller
                 ]
             );
 
-            if (! isset($result['secure_url'])) {
+            if (!isset($result['secure_url'])) {
                 return back()
                     ->withInput()
                     ->withErrors([
-                        'cv' =>
-                            'Cloudinary uploaded the CV but did not return a secure URL.',
+                        'cv' => 'Cloudinary uploaded the CV but did not return a secure URL.',
                     ]);
             }
 
@@ -62,7 +63,7 @@ class ResumeController extends Controller
                 $oldResume->delete();
             }
 
-            // Store the Cloudinary URL in file_path.
+            // Store the Cloudinary URL in the database.
             Resume::create([
                 'file_path' => $result['secure_url'],
                 'original_name' => $validated['cv']->getClientOriginalName(),
@@ -72,8 +73,7 @@ class ResumeController extends Controller
             return back()
                 ->withInput()
                 ->withErrors([
-                    'cv' =>
-                        'Cloudinary error: ' . $e->getMessage(),
+                    'cv' => 'Cloudinary error: ' . $e->getMessage(),
                 ]);
         }
 
@@ -88,7 +88,7 @@ class ResumeController extends Controller
     public function destroy(Resume $resume): RedirectResponse
     {
         // The CV file itself is stored on Cloudinary.
-        // For now we remove its database record.
+        // For now, remove only the database record.
         $resume->delete();
 
         return redirect()
@@ -99,7 +99,7 @@ class ResumeController extends Controller
     /**
      * Download the current resume.
      */
-    public function download(Resume $resume): RedirectResponse
+    public function download(Resume $resume): Response
     {
         abort_unless(
             $resume && $resume->file_path,
@@ -107,6 +107,37 @@ class ResumeController extends Controller
             'CV not found.'
         );
 
-        return redirect()->away($resume->file_path);
+        try {
+            // Retrieve the PDF from Cloudinary.
+            $response = Http::timeout(30)->get($resume->file_path);
+
+            abort_unless(
+                $response->successful(),
+                404,
+                'CV file could not be retrieved from Cloudinary.'
+            );
+
+            // Force the browser to download the PDF.
+            return response(
+                $response->body(),
+                200,
+                [
+                    'Content-Type' => 'application/pdf',
+                    'Content-Disposition' => 'attachment; filename="' .
+                        $resume->original_name .
+                        '"',
+                    'Content-Length' => strlen($response->body()),
+                    'Cache-Control' => 'no-cache, no-store, must-revalidate',
+                    'Pragma' => 'no-cache',
+                    'Expires' => '0',
+                ]
+            );
+
+        } catch (\Throwable $e) {
+            abort(
+                404,
+                'Unable to download the CV.'
+            );
+        }
     }
 }

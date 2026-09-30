@@ -5,14 +5,13 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\MessageController;
 use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\ProjectController;
-use App\Http\Controllers\Admin\ResumeController;
+use App\Http\Controllers\Admin\ResumeController as AdminResumeController;
 use App\Http\Controllers\Admin\SkillController;
 use App\Http\Controllers\Admin\SocialLinkController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\HomeController;
-use App\Models\Resume;
+use App\Http\Controllers\ResumeController;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Storage;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,30 +27,14 @@ Route::get('/', HomeController::class)->name('home');
 | Public CV Download
 |--------------------------------------------------------------------------
 |
-| Downloads the latest CV uploaded through the admin panel.
+| Downloads/opens the latest CV stored on Cloudinary.
 |
 */
 
-Route::get('/cv', function () {
-    $resume = Resume::latest()->first();
-
-    abort_unless(
-        $resume && $resume->fileExists(),
-        404,
-        'CV not found.'
-    );
-
-    $filePath = Storage::disk('local')->path($resume->file_path);
-
-    return response()->download(
-        $filePath,
-        $resume->original_name,
-        [
-            'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'attachment; filename="' . $resume->original_name . '"',
-        ]
-    );
-})->name('cv.download');
+Route::get(
+    '/cv',
+    [ResumeController::class, 'download']
+)->name('cv.download');
 
 
 /*
@@ -60,8 +43,10 @@ Route::get('/cv', function () {
 |--------------------------------------------------------------------------
 */
 
-Route::post('/contact', [ContactController::class, 'store'])
-    ->name('contact.store');
+Route::post(
+    '/contact',
+    [ContactController::class, 'store']
+)->name('contact.store');
 
 
 /*
@@ -91,8 +76,6 @@ Route::post(
 |--------------------------------------------------------------------------
 |
 | Only authenticated administrators can access these routes.
-| The "admin" middleware redirects guests to /admin/login
-| and rejects authenticated non-admin users with HTTP 403.
 |
 */
 
@@ -131,8 +114,10 @@ Route::middleware('admin')
         |--------------------------------------------------------------------------
         */
 
-        Route::resource('projects', ProjectController::class)
-            ->except(['show']);
+        Route::resource(
+            'projects',
+            ProjectController::class
+        )->except(['show']);
 
         Route::patch(
             'projects/{project}/toggle-published',
@@ -151,8 +136,10 @@ Route::middleware('admin')
         |--------------------------------------------------------------------------
         */
 
-        Route::resource('skills', SkillController::class)
-            ->except(['show']);
+        Route::resource(
+            'skills',
+            SkillController::class
+        )->except(['show']);
 
 
         /*
@@ -215,22 +202,22 @@ Route::middleware('admin')
 
         Route::get(
             'resume',
-            [ResumeController::class, 'index']
+            [AdminResumeController::class, 'index']
         )->name('resume.index');
 
         Route::post(
             'resume',
-            [ResumeController::class, 'store']
+            [AdminResumeController::class, 'store']
         )->name('resume.store');
 
         Route::delete(
             'resume/{resume}',
-            [ResumeController::class, 'destroy']
+            [AdminResumeController::class, 'destroy']
         )->name('resume.destroy');
 
         Route::get(
             'resume/{resume}/download',
-            [ResumeController::class, 'download']
+            [AdminResumeController::class, 'download']
         )->name('resume.download');
 
 
@@ -240,11 +227,14 @@ Route::middleware('admin')
         |--------------------------------------------------------------------------
         */
 
-        Route::resource('social-links', SocialLinkController::class)
-            ->except(['show'])
-            ->parameters([
-                'social-links' => 'socialLink',
-            ]);
+        Route::resource(
+            'social-links',
+            SocialLinkController::class
+        )
+        ->except(['show'])
+        ->parameters([
+            'social-links' => 'socialLink',
+        ]);
     });
 
 
@@ -254,10 +244,12 @@ Route::middleware('admin')
 |--------------------------------------------------------------------------
 |
 | Unknown /admin/... URLs go back to the admin dashboard.
-| The admin middleware ensures only administrators can reach it.
 |
 */
 
-Route::redirect('/admin/{any}', '/admin')
-    ->where('any', '.*')
-    ->middleware('admin');
+Route::redirect(
+    '/admin/{any}',
+    '/admin'
+)
+->where('any', '.*')
+->middleware('admin');

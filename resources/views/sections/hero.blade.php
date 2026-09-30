@@ -1,3 +1,4 @@
+```blade
 {{-- ================= HERO ================= --}}
 <section class="hero section" id="home">
     <div class="hero__glow hero__glow--1" aria-hidden="true"></div>
@@ -34,6 +35,7 @@
             {{-- CTA BUTTONS --}}
             <div class="hero__cta">
 
+                {{-- View Projects --}}
                 <a href="#projects" class="btn btn--primary">
                     View My Projects
 
@@ -51,35 +53,38 @@
                     </svg>
                 </a>
 
-                @if ($resumeAvailable)
-                    <a
-                        href="{{ route('cv.download') }}"
-                        class="btn btn--ghost"
-                        title="Download CV (PDF)"
+
+                {{-- Download CV --}}
+                <a
+                    href="{{ route('cv.download') }}"
+                    class="btn btn--ghost"
+                    title="Download CV (PDF)"
+                >
+                    <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        aria-hidden="true"
                     >
-                        <svg
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="2"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            aria-hidden="true"
-                        >
-                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                            <polyline points="7 10 12 15 17 10"/>
-                            <line x1="12" y1="15" x2="12" y2="3"/>
-                        </svg>
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="7 10 12 15 17 10"/>
+                        <line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
 
-                        Download CV
-                    </a>
-                @endif
+                    Download CV
+                </a>
 
+
+                {{-- Contact --}}
                 <a href="#contact" class="btn btn--text">
                     Contact Me
                 </a>
 
             </div>
+
 
             {{-- HERO META --}}
             <div class="hero__meta">
@@ -103,6 +108,7 @@
                     </span>
                 @endif
 
+
                 <span class="hero__meta-item">
 
                     <svg
@@ -110,6 +116,8 @@
                         fill="none"
                         stroke="currentColor"
                         stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
                         aria-hidden="true"
                     >
                         <polyline points="16 18 22 12 16 6"/>
@@ -210,3 +218,4 @@
     </a>
 
 </section>
+```
