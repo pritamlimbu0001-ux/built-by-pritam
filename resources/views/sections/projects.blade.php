@@ -11,8 +11,7 @@
             <article class="project-feature reveal">
                 <div class="project-feature__media">
                     @if ($featuredProject->image)
-                        <img src="{{ asset('storage/' . $featuredProject->image) }}" alt="{{ $featuredProject->title }} screenshot" class="project-feature__img">
-                    @else
+<img src="{{ $featuredProject->image }}" alt="{{ $featuredProject->title }} screenshot" class="project-feature__img">                    @else
                         <div class="screenshot-placeholder" role="img" aria-label="{{ $featuredProject->title }} screenshot placeholder">
                             <div class="screenshot-placeholder__bar"><span></span><span></span><span></span></div>
                             <div class="screenshot-placeholder__body">
@@ -65,8 +64,7 @@
             @foreach ($otherProjects as $project)
                 <article class="project-card reveal">
                     @if ($project->image)
-                        <img src="{{ asset('storage/' . $project->image) }}" alt="{{ $project->title }}" class="project-card__img">
-                    @else
+<img src="{{ $project->image }}" alt="{{ $project->title }}" class="project-card__img">                    @else
                         <div class="project-card__placeholder" aria-hidden="true">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
                         </div>
