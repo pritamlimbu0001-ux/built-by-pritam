@@ -17,19 +17,22 @@
             <h1 class="hero__title">
                 Hi, I'm
                 <span class="accent">
-                    {{ $profile->name ?? 'Pritam Limbu' }}
+                    {{ $profile?->name ?? 'Pritam Limbu' }}
                 </span>
             </h1>
 
             <h2 class="hero__subtitle">
                 {!! nl2br(e(
-                    $profile->headline
-                    ?? 'Computer Engineering Student & Web Developer'
+                    $profile?->headline
+                    ?? 'Computer Engineering Student & Software Developer'
                 )) !!}
             </h2>
 
             <p class="hero__text">
-                {!! nl2br(e($profile->short_about ?? '')) !!}
+                {!! nl2br(e(
+                    $profile?->short_about
+                    ?? "I'm a Computer Engineering student from Nepal, passionate about building practical software across web, mobile, and desktop platforms. I enjoy turning ideas into useful applications and continuously improving my skills through real-world projects."
+                )) !!}
             </p>
 
             {{-- CTA BUTTONS --}}
@@ -52,7 +55,6 @@
                         <path d="M12 5l7 7-7 7"/>
                     </svg>
                 </a>
-
 
                 {{-- Download CV --}}
                 <a
@@ -77,7 +79,6 @@
                     Download CV
                 </a>
 
-
                 {{-- Contact --}}
                 <a href="#contact" class="btn btn--text">
                     Contact Me
@@ -85,11 +86,11 @@
 
             </div>
 
-
             {{-- HERO META --}}
             <div class="hero__meta">
 
-                @if ($profile->location ?? null)
+                {{-- Location --}}
+                @if ($profile?->location)
                     <span class="hero__meta-item">
 
                         <svg
@@ -108,7 +109,7 @@
                     </span>
                 @endif
 
-
+                {{-- Development Platforms --}}
                 <span class="hero__meta-item">
 
                     <svg
@@ -124,7 +125,7 @@
                         <polyline points="8 6 2 12 8 18"/>
                     </svg>
 
-                    Laravel · PHP · MySQL
+                    Web · Mobile · Desktop · Software
 
                 </span>
 
@@ -132,30 +133,29 @@
 
         </div>
 
-
         {{-- PROFILE IMAGE --}}
         <div class="hero__visual reveal reveal--delay">
 
             <div
                 class="profile-card"
                 role="img"
-                aria-label="Profile photo of {{ $profile->name ?? 'Pritam Limbu' }}"
+                aria-label="Profile photo of {{ $profile?->name ?? 'Pritam Limbu' }}"
             >
 
-                @if ($profile->profile_image ?? null)
+                @if ($profile?->profile_image)
 
-                    {{-- Cloudinary URL or old Laravel storage path --}}
+                    {{-- Cloudinary URL or Laravel storage path --}}
                     <img
                         src="{{ str_starts_with($profile->profile_image, 'http')
                             ? $profile->profile_image
                             : asset('storage/' . $profile->profile_image) }}"
-                        alt="{{ $profile->name ?? 'Pritam Limbu' }}"
+                        alt="{{ $profile?->name ?? 'Pritam Limbu' }}"
                         class="profile-card__photo"
                     >
 
                 @else
 
-                    {{-- Placeholder --}}
+                    {{-- Profile Placeholder --}}
                     <div class="profile-card__avatar">
 
                         <svg
@@ -173,23 +173,21 @@
 
                 @endif
 
-
                 {{-- PROFILE LABEL --}}
                 <div class="profile-card__label">
 
                     <span class="profile-card__name">
-                        {{ $profile->name ?? 'Pritam Limbu' }}
+                        {{ $profile?->name ?? 'Pritam Limbu' }}
                     </span>
 
                     <span class="profile-card__role">
-                        Web Developer
+                        Software Developer
                     </span>
 
                 </div>
 
-
                 {{-- PLACEHOLDER BADGE --}}
-                @unless ($profile->profile_image ?? null)
+                @unless ($profile?->profile_image)
 
                     <span class="profile-card__badge">
                         Photo placeholder
@@ -202,7 +200,6 @@
         </div>
 
     </div>
-
 
     {{-- SCROLL INDICATOR --}}
     <a
