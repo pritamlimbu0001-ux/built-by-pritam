@@ -1,4 +1,4 @@
-```blade
+
 {{-- ================= HERO ================= --}}
 <section class="hero section" id="home">
     <div class="hero__glow hero__glow--1" aria-hidden="true"></div>
@@ -215,4 +215,4 @@
     </a>
 
 </section>
-```
+

@@ -1,4 +1,4 @@
-```blade
+
 {{-- ================= RESUME ================= --}}
 <section class="section" id="resume">
     <div class="container">
@@ -253,4 +253,4 @@
 
     </div>
 </section>
-```
+
