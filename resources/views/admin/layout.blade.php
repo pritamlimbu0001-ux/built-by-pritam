@@ -10,15 +10,26 @@
 
     {{-- =========================================================
          FAVICON
+         File: public/favicon.png
     ========================================================== --}}
     <link
         rel="icon"
-        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%2316a34a'/><text x='50' y='68' font-size='52' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='bold'>PL</text></svg>"
+        type="image/png"
+        sizes="32x32"
+        href="{{ asset('favicon.png') }}"
+    >
+
+    <link
+        rel="icon"
+        type="image/png"
+        sizes="16x16"
+        href="{{ asset('favicon.png') }}"
     >
 
     <link
         rel="apple-touch-icon"
-        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%2316a34a'/><text x='50' y='68' font-size='52' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='bold'>PL</text></svg>"
+        sizes="180x180"
+        href="{{ asset('favicon.png') }}"
     >
 
     {{-- =========================================================
@@ -156,7 +167,9 @@
         </nav>
 
 
-        {{-- Sidebar Footer --}}
+        {{-- =====================================================
+             SIDEBAR FOOTER
+        ====================================================== --}}
         <div class="admin-sidebar__footer">
 
             <div class="admin-sidebar__user">
@@ -201,7 +214,9 @@
     </aside>
 
 
-    {{-- Sidebar Backdrop --}}
+    {{-- =========================================================
+         SIDEBAR BACKDROP
+    ========================================================== --}}
     <div
         class="admin-sidebar__backdrop"
         id="adminBackdrop"
@@ -214,7 +229,9 @@
     ========================================================== --}}
     <div class="admin-main">
 
-        {{-- Topbar --}}
+        {{-- =====================================================
+             TOPBAR
+        ====================================================== --}}
         <header class="admin-topbar">
 
             {{-- Mobile Sidebar Toggle --}}

@@ -1,12 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
 
     {{-- =========================================================
          SEO
     ========================================================== --}}
+
     <title>
         @yield(
             'title',
@@ -19,7 +26,10 @@
         content="Portfolio of Pritam Limbu, a Computer Engineering student and software developer from Nepal."
     >
 
-    <meta name="author" content="Pritam Limbu">
+    <meta
+        name="author"
+        content="Pritam Limbu"
+    >
 
     <meta
         property="og:title"
@@ -31,20 +41,34 @@
         content="Computer Engineering Student & Software Developer from Nepal."
     >
 
-    <meta property="og:type" content="website">
+    <meta
+        property="og:type"
+        content="website"
+    >
 
 
     {{-- =========================================================
          FAVICON
+         File: public/favicon.png
     ========================================================== --}}
+
     <link
         rel="icon"
         type="image/png"
+        sizes="32x32"
+        href="{{ asset('favicon.png') }}"
+    >
+
+    <link
+        rel="icon"
+        type="image/png"
+        sizes="16x16"
         href="{{ asset('favicon.png') }}"
     >
 
     <link
         rel="apple-touch-icon"
+        sizes="180x180"
         href="{{ asset('favicon.png') }}"
     >
 
@@ -52,7 +76,11 @@
     {{-- =========================================================
          GOOGLE FONTS
     ========================================================== --}}
-    <link rel="preconnect" href="https://fonts.googleapis.com">
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
 
     <link
         rel="preconnect"
@@ -69,6 +97,7 @@
     {{-- =========================================================
          MAIN CSS
     ========================================================== --}}
+
     <link
         rel="stylesheet"
         href="{{ asset('css/style.css') }}"
@@ -78,11 +107,14 @@
 
 </head>
 
+
 <body>
+
 
     {{-- =========================================================
          SKIP LINK
     ========================================================== --}}
+
     <a
         class="skip-link"
         href="#main"
@@ -94,6 +126,7 @@
     {{-- =========================================================
          NAVIGATION
     ========================================================== --}}
+
     <header
         class="site-header"
         id="siteHeader"
@@ -104,7 +137,11 @@
             aria-label="Main navigation"
         >
 
-            {{-- Brand --}}
+
+            {{-- =================================================
+                 BRAND
+            ================================================== --}}
+
             <a
                 href="#home"
                 class="nav__brand"
@@ -121,7 +158,10 @@
             </a>
 
 
-            {{-- Mobile Menu Button --}}
+            {{-- =================================================
+                 MOBILE MENU BUTTON
+            ================================================== --}}
+
             <button
                 class="nav__toggle"
                 id="navToggle"
@@ -129,70 +169,92 @@
                 aria-expanded="false"
                 aria-controls="navMenu"
             >
+
                 <span></span>
                 <span></span>
                 <span></span>
+
             </button>
 
 
-            {{-- Navigation Menu --}}
+            {{-- =================================================
+                 NAVIGATION MENU
+            ================================================== --}}
+
             <ul
                 class="nav__menu"
                 id="navMenu"
             >
 
                 <li>
+
                     <a
                         href="#home"
                         class="nav__link is-active"
                     >
                         Home
                     </a>
+
                 </li>
 
+
                 <li>
+
                     <a
                         href="#about"
                         class="nav__link"
                     >
                         About
                     </a>
+
                 </li>
 
+
                 <li>
+
                     <a
                         href="#skills"
                         class="nav__link"
                     >
                         Skills
                     </a>
+
                 </li>
 
+
                 <li>
+
                     <a
                         href="#projects"
                         class="nav__link"
                     >
                         Projects
                     </a>
+
                 </li>
 
+
                 <li>
+
                     <a
                         href="#resume"
                         class="nav__link"
                     >
                         Resume
                     </a>
+
                 </li>
 
+
                 <li>
+
                     <a
                         href="#contact"
                         class="nav__link"
                     >
                         Contact
                     </a>
+
                 </li>
 
             </ul>
@@ -205,6 +267,7 @@
     {{-- =========================================================
          MAIN CONTENT
     ========================================================== --}}
+
     <main id="main">
 
         @yield('content')
@@ -215,12 +278,16 @@
     {{-- =========================================================
          FOOTER
     ========================================================== --}}
+
     <footer class="footer">
 
         <div class="container footer__inner">
 
 
-            {{-- Footer Identity --}}
+            {{-- =================================================
+                 FOOTER IDENTITY
+            ================================================== --}}
+
             <div class="footer__identity">
 
                 <a
@@ -237,7 +304,10 @@
             </div>
 
 
-            {{-- Footer Navigation --}}
+            {{-- =================================================
+                 FOOTER NAVIGATION
+            ================================================== --}}
+
             <nav
                 class="footer__nav"
                 aria-label="Footer navigation"
@@ -270,7 +340,10 @@
             </nav>
 
 
-            {{-- Footer Social Links --}}
+            {{-- =================================================
+                 FOOTER SOCIAL LINKS
+            ================================================== --}}
+
             <div class="footer__social">
 
                 @forelse ($socialLinks ?? [] as $link)
@@ -284,7 +357,15 @@
                     >
 
                         <span class="social-link__initial">
-                            {{ Str::upper(Str::substr($link->platform, 0, 1)) }}
+
+                            {{ Str::upper(
+                                Str::substr(
+                                    $link->platform,
+                                    0,
+                                    1
+                                )
+                            ) }}
+
                         </span>
 
                     </a>
@@ -301,7 +382,10 @@
         </div>
 
 
-        {{-- Footer Bottom --}}
+        {{-- =========================================================
+             FOOTER BOTTOM
+        ========================================================== --}}
+
         <div class="footer__bottom">
 
             <p>
@@ -316,6 +400,7 @@
     {{-- =========================================================
          TOAST
     ========================================================== --}}
+
     <div
         class="toast"
         id="toast"
@@ -327,12 +412,14 @@
     {{-- =========================================================
          JAVASCRIPT
     ========================================================== --}}
+
     <script
         src="{{ asset('js/main.js') }}"
         defer
     ></script>
 
     @stack('scripts')
+
 
 </body>
 </html>
