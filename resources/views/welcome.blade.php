@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <!-- SEO -->
-    <title>Pritam Limbu — Computer Engineering Student & Web Developer</title>
+    <title>Pritam Limbu — Computer Engineering Student & Software Developer</title>
     <meta
         name="description"
         content="Portfolio of Pritam Limbu, a Computer Engineering student from Nepal focused on Laravel, PHP, MySQL and modern web development."

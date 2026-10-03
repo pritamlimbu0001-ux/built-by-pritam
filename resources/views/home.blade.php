@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Pritam Limbu — Computer Engineering Student & Web Developer')
+@section('title', 'Pritam Limbu — Computer Engineering Student & Software Developer')
 
 @section('content')
     @include('sections.hero')
